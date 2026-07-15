@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Windows 12 · Web Simulator</title>
+<meta name="description" content="A Windows 12 inspired desktop OS simulator built with vanilla HTML, CSS and JavaScript.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================ WALLPAPER ============================ -->
+<div id="wallpaper" class="wallpaper-flux"></div>
+
+<!-- ============================ BOOT SCREEN =========================== -->
+<div id="boot-screen">
+  <div class="boot-logo"><span></span><span></span><span></span><span></span></div>
+  <div class="boot-bar"></div>
+  <div class="boot-text" id="boot-text">Starting Windows 12…</div>
+</div>
+
+<!-- ============================ LOCK SCREEN =========================== -->
+<div id="lock-screen">
+  <div class="lock-clock">
+    <div class="lock-time" id="lock-time">--:--</div>
+    <div class="lock-date" id="lock-date">Loading…</div>
+  </div>
+  <div class="lock-notifs" id="lock-notifs"></div>
+  <div class="lock-hint" id="lock-hint">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Click or press any key to unlock</span>
+  </div>
+</div>
+
+<!-- ============================ LOGIN SCREEN ========================== -->
+<div id="login-screen" class="hidden">
+  <div class="login-avatar" id="login-avatar">A</div>
+  <div class="login-name" id="login-name">User</div>
+  <div class="login-pass-row">
+    <input type="password" id="login-pass" placeholder="PIN (any digits)" maxlength="12">
+    <button class="login-go" id="login-go" aria-label="Sign in">➜</button>
+  </div>
+  <div class="login-hint">Hint: type anything, then press Enter</div>
+</div>
+
+<!-- ============================ DESKTOP =============================== -->
+<div id="desktop" class="hidden">
+  <div class="desktop-icons" id="desktop-icons"></div>
+  <div class="widgets-row" id="widgets-row"></div>
+</div>
+
+<!-- Generic context menu -->
+<div class="ctx-menu glass" id="ctx-menu"></div>
+
+<!-- Windows layer -->
+<div id="windows-layer"></div>
+<div class="snap-preview" id="snap-preview"></div>
+
+<!-- Task view -->
+<div id="task-view">
+  <div class="tv-desktops" id="tv-desktops"></div>
+  <div class="tv-windows" id="tv-windows"></div>
+</div>
+
+<!-- ============================ TASKBAR ================================ -->
+<div id="taskbar" class="hidden">
+  <div class="taskbar-inner glass">
+    <button class="tb-btn tb-start" id="btn-start" aria-label="Start" title="Start">
+      <svg width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor"/><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor"/><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor"/></svg>
+    </button>
+    <button class="tb-search" id="btn-search" title="Search">🔍 <span class="lbl">Search</span></button>
+    <button class="tb-btn" id="btn-taskview" title="Task view">🗗</button>
+    <button class="tb-btn" id="btn-widgets" title="Widgets">🧩</button>
+    <div class="tb-sep"></div>
+    <div class="tb-running" id="tb-running"></div>
+    <div class="tb-sep"></div>
+    <div class="tb-tray">
+      <button id="btn-ai" title="AI Assistant">✨</button>
+      <button id="btn-notif" title="Notifications">🔔</button>
+      <button id="btn-quicksettings" title="Quick settings">📶🔊🔋</button>
+    </div>
+    <button class="tb-clock" id="btn-clock"><span id="tb-time">--:--</span><br><span id="tb-date-small">--</span></button>
+  </div>
+</div>
+
+<!-- ============================ START MENU ============================= -->
+<div class="panel glass" id="start-menu">
+  <div class="sm-search"><span>🔍</span><input id="sm-search-input" placeholder="Type to search apps, files, and settings"></div>
+  <div id="sm-body">
+    <div class="sm-section-title">Pinned <span>All apps ›</span></div>
+    <div class="sm-pinned" id="sm-pinned"></div>
+    <div class="sm-section-title">Recommended</div>
+    <div class="sm-rec" id="sm-rec"></div>
+  </div>
+  <div class="sm-footer">
+    <button class="sm-user" id="sm-user"><span class="av" id="sm-av">A</span><span id="sm-username">User</span></button>
+    <div class="sm-power">
+      <button id="pw-settings" title="Settings">⚙️</button>
+      <button id="pw-lock" title="Lock">🔒</button>
+      <button id="pw-power" title="Power">⏻</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ NOTIFICATION CENTER ==================== -->
+<div class="panel glass" id="notif-center">
+  <div class="nc-head"><h3>Notifications</h3><button id="nc-clear">Clear all</button></div>
+  <div class="nc-list" id="nc-list"></div>
+  <div class="nc-cal">
+    <div class="sm-section-title" id="nc-cal-title">Calendar</div>
+    <div class="grid" id="nc-cal-grid"></div>
+  </div>
+</div>
+
+<!-- ============================ QUICK SETTINGS ========================= -->
+<div class="panel glass" id="quick-settings">
+  <div class="qs-tiles" id="qs-tiles"></div>
+  <div class="qs-slider-row">🔆<input type="range" id="qs-brightness" min="40" max="120" value="100"><span id="qs-b-val">100%</span></div>
+  <div class="qs-slider-row">🔊<input type="range" id="qs-volume" min="0" max="100" value="70"><span id="qs-v-val">70%</span></div>
+  <div class="qs-bottom"><span id="qs-battery-txt">🔋 92%</span><span id="qs-status">All systems normal</span></div>
+</div>
+
+<!-- ============================ SEARCH PANEL =========================== -->
+<div class="panel glass" id="search-panel">
+  <input id="search-input" placeholder="Search apps, widgets, settings…" autocomplete="off">
+  <div id="search-results"></div>
+</div>
+
+<!-- ============================ AI SIDE PANEL ========================== -->
+<div class="panel glass" id="ai-side-panel">
+  <div class="ai-head"><div class="glyph">✨</div><div><b>Copilot</b><small>Your on-device AI assistant</small></div></div>
+  <div class="ai-body" id="ai-side-body"></div>
+  <div class="ai-input-row">
+    <input id="ai-side-input" placeholder="Ask me anything…">
+    <button id="ai-side-send">➤</button>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div id="toast-layer"></div>
+
+<!-- ============================ SCRIPTS ================================ -->
+<!-- Load order matters: state first, then system, desktop, windows, panels,
+     then every app module (they only register builders + APPS entries). -->
+<script src="js/state.js"></script>
+<script src="js/system.js"></script>
+<script src="js/desktop.js"></script>
+<script src="js/windows.js"></script>
+<script src="js/panels.js"></script>
+<script src="js/apps.js"></script>
+<script src="js/browser.js"></script>
+<script src="js/games.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
